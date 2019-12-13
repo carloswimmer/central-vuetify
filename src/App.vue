@@ -27,3 +27,12 @@ export default {
   },
 };
 </script>
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Open+Sans|Open+Sans:600|Open+Sans:700|Open+Sans:800');
+
+body {
+  font-family: 'Open Sans', sans-serif !important;
+  color: #666 !important;
+}
+</style>

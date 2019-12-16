@@ -2,22 +2,22 @@
   <v-app>
     <navbar />
 
-    <v-content>
-      <HelloWorld/>
+    <v-content class="grey--text text--darken-3">
+      <declaracao />
     </v-content>
   </v-app>
 </template>
 
 <script>
 import Navbar from './components/Navbar';
-import HelloWorld from './components/HelloWorld';
+import Declaracao from './components/Declaracao';
 
 export default {
   name: 'App',
 
   components: {
     Navbar,
-    HelloWorld
+    Declaracao
   },
 
   data() {

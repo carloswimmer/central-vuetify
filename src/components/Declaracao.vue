@@ -55,7 +55,45 @@
       
     </v-data-table>
 
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-speed-dial
+      v-model="fab"
+      fixed
+      bottom
+      right
+      direction="top"
+      open-on-hover
+      transition="slide-y-reverse-transition"
+    >
+      <template v-slot:activator>
+        <v-btn
+          v-model="fab"
+          color="deep-orange"
+          dark
+          fab
+        >
+          <v-icon v-if="fab">mdi-close</v-icon>
+          <v-icon v-else>mdi-plus</v-icon>
+        </v-btn>
+      </template>
+      <v-btn
+        fab
+        dark
+        small
+        color="accent"
+      >
+        <v-icon>mdi-pencil-plus</v-icon>
+      </v-btn>
+      <v-btn
+        fab
+        dark
+        small
+        color="default"
+      >
+        <v-icon>mdi-currency-usd-off</v-icon>
+      </v-btn>
+    </v-speed-dial>
+
+    <!-- <v-dialog v-model="dialog" max-width="500px">
       <template v-slot:activator="{ on }">
         <v-btn 
           fab
@@ -98,7 +136,7 @@
           <v-btn color="accent" text @click="save">Salvar</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
 
   </v-container>
 </template>

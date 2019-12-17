@@ -1,5 +1,21 @@
 <template>
   <v-container mt-3>
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="timeout"
+      bottom
+      color="success"
+    >
+      Sua declaração foi incluida com sucesso
+      <v-btn
+        color="white"
+        text
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
+
     <v-data-table
       :headers="headers"
       :items="declaracoes"
@@ -47,7 +63,7 @@
         <v-icon
           small
           color="error"
-          @click="deleteItem(item)"
+          @click="openModal('Deletar', item)"
         >
           mdi-delete
         </v-icon>
@@ -75,40 +91,44 @@
           <v-icon v-else>mdi-plus</v-icon>
         </v-btn>
       </template>
-      <v-btn
-        fab
-        dark
-        small
-        color="accent"
-      >
-        <v-icon>mdi-pencil-plus</v-icon>
-      </v-btn>
-      <v-btn
-        fab
-        dark
-        small
-        color="default"
-      >
-        <v-icon>mdi-currency-usd-off</v-icon>
-      </v-btn>
+      <v-tooltip left>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            fab
+            dark
+            small
+            color="accent"
+            v-on="on"
+            @click.stop="dialog = true"
+          >
+            <v-icon>mdi-pencil-plus</v-icon>
+          </v-btn>
+        </template>
+        <span>Declarar</span>
+      </v-tooltip>
+
+      <v-tooltip left>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            fab
+            dark
+            small
+            color="default"
+            v-on="on"
+            @click="openModal('Sem Bens')"
+          >
+            <v-icon>mdi-currency-usd-off</v-icon>
+          </v-btn>
+        </template>
+        <span>Sem Bens</span>
+      </v-tooltip>
+
     </v-speed-dial>
 
-    <!-- <v-dialog v-model="dialog" max-width="500px">
-      <template v-slot:activator="{ on }">
-        <v-btn 
-          fab
-          large
-          dark
-          fixed
-          bottom
-          right
-          color="accent"
-          v-on="on">
-          <v-icon>
-            mdi-plus
-          </v-icon>
-        </v-btn>
-      </template>
+    <v-dialog 
+      v-model="dialog" 
+      max-width="500px"
+    >
       <v-card>
         <v-card-title>
           <span class="headline">{{ formTitle }}</span>
@@ -132,11 +152,44 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="default" text @click="close">Cancelar</v-btn>
-          <v-btn color="accent" text @click="save">Salvar</v-btn>
+          <v-btn color="default" text @click="close('dialog')">Cancelar</v-btn>
+          <v-btn color="accent" text @click="save('dialog')">Salvar</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog> -->
+    </v-dialog>
+
+    <v-dialog
+      v-model="confirm"
+      max-width="290"
+    >
+      <v-card>
+        <v-card-title class="headline">{{ confirmHeadeline }}</v-card-title>
+
+        <v-card-text>
+          {{ confirmContent }}
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            color="default"
+            text
+            @click="confirm = false"
+          >
+            Não
+          </v-btn>
+
+          <v-btn
+            color="accent"
+            text
+            @click="agree(confirmAction)"
+          >
+            Sim
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
   </v-container>
 </template>
@@ -146,6 +199,7 @@
     name: 'declaracao',
     data: () => ({
       dialog: false,
+      fab: false,
       headers: [
         {
           text: 'Ano Base',
@@ -168,6 +222,12 @@
         data: '',
         situacao: '',
       },
+      snackbar: false,
+      timeout: 4500,
+      confirm: false,
+      confirmHeadeline: '',
+      confirmContent: '',
+      confirmAction: ''
     }),
 
     computed: {
@@ -178,8 +238,11 @@
 
     watch: {
       dialog (val) {
-        val || this.close()
+        val || this.close('dialog')
       },
+      confirm (val) {
+        val || this.close('confirm')
+      }
     },
 
     created () {
@@ -193,16 +256,67 @@
             ano: '2018',
             data: '18/11/2019',
             situacao: 'ENTREGUE',
+            bens: [
+              {
+                tipo: 'APARTAMENTO',
+                valor: '133.000,00',
+                descricao: 'PRAIA DO TOMBO'
+              },
+              {
+                tipo: 'CARRO',
+                valor: '33.000,00',
+                descricao: 'OPALA'
+              },
+              {
+                tipo: 'APLICAÇÃO',
+                valor: '93.000,00',
+                descricao: 'AÇÕES'
+              }
+            ]
           },
           {
             ano: '2017',
             data: '11/09/2018',
             situacao: 'ENTREGUE',
+            bens: [
+              {
+                tipo: 'APARTAMENTO',
+                valor: '133.000,00',
+                descricao: 'PRAIA DO TOMBO'
+              },
+              {
+                tipo: 'CARRO',
+                valor: '33.000,00',
+                descricao: 'OPALA'
+              },
+              {
+                tipo: 'APLICAÇÃO',
+                valor: '93.000,00',
+                descricao: 'AÇÕES'
+              }
+            ]
           },
           {
             ano: '2016',
             data: '22/04/2017',
             situacao: 'ENTREGUE',
+            bens: [
+              {
+                tipo: 'APARTAMENTO',
+                valor: '133.000,00',
+                descricao: 'PRAIA DO TOMBO'
+              },
+              {
+                tipo: 'CARRO',
+                valor: '33.000,00',
+                descricao: 'OPALA'
+              },
+              {
+                tipo: 'APLICAÇÃO',
+                valor: '93.000,00',
+                descricao: 'AÇÕES'
+              }
+            ]
           },
         ]
       },
@@ -215,25 +329,53 @@
 
       deleteItem (item) {
         const index = this.declaracoes.indexOf(item)
-        confirm('Are you sure you want to delete this item?') && this.declaracoes.splice(index, 1)
+        this.declaracoes.splice(index, 1)
       },
 
-      close () {
-        this.dialog = false
+      close (modal) {
+        modal === 'dialog' ? this.dialog = false : this.confirm = false
         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
         }, 300)
       },
 
-      save () {
+      save (modal) {
         if (this.editedIndex > -1) {
           Object.assign(this.declaracoes[this.editedIndex], this.editedItem)
         } else {
+          // eslint-disable-next-line no-console
+          console.log(this.editedItem)
           this.declaracoes.push(this.editedItem)
         }
-        this.close()
+        this.snackbar = true
+        this.close(modal)
       },
+
+      openModal (action, item) {
+        if (action === 'Deletar') {
+          this.editedItem = item
+          this.confirmHeadeline = 'Deletar'
+          this.confirmContent = 'Você tem certeza que deseja deletar essa declaração?'
+        } else {
+          this.confirmHeadeline = 'Sem Bens'
+          this.confirmContent = 'Você confirma não possuir bens a declarar?'
+        }
+          this.confirmAction = action
+          this.confirm = true
+      },
+
+      agree (action) {
+        if (action === 'Deletar') {
+          this.deleteItem(this.editedItem)
+          this.close('confirm')
+        } else {
+          this.editedItem.ano = '2019'
+          this.editedItem.data = '01/01/2020'
+          this.editedItem.situacao = 'ENTREGUE'
+          this.save('confirm')
+        }
+      }
     },
   }
 </script>

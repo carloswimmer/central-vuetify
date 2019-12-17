@@ -61,8 +61,8 @@
       color="primary lighten-3">
       <v-list>
         <v-list-item>
-          <v-list-item-avatar class="accent">
-            <v-span class="primary--text text--darken-2">CW</v-span> 
+          <v-list-item-avatar class="deep-orange lighten-1">
+            <span>CW</span> 
           </v-list-item-avatar>
         </v-list-item>
 

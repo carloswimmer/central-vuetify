@@ -135,19 +135,44 @@
         </v-card-title>
 
         <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field v-model="editedItem.ano" label="Ano Base"></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field v-model="editedItem.data" label="Data da Declaração"></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field v-model="editedItem.situacao" label="Situação"></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
+          <v-form ref="form">
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field 
+                  v-model="editedItem.ano" 
+                  label="Ano Base"
+                  :rules="inputRules"
+                />
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-menu v-model="menu" :close-on-content-click="false" min-width="290">
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        :value="dateFormatted"
+                        clearable
+                        label="Data da Declaração"
+                        v-on="on"
+                        @click:clear="editedItem.data = null"
+                        :rules="inputRules"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker 
+                      v-model="editedItem.data" 
+                      @change="menu = false"
+                    />
+                  </v-menu>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field 
+                    v-model="editedItem.situacao" 
+                    label="Situação"
+                    :rules="inputRules"
+                  />
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-form>
         </v-card-text>
 
         <v-card-actions>
@@ -195,11 +220,14 @@
 </template>
 
 <script>
+  import moment from 'moment'
+
   export default {
     name: 'declaracao',
     data: () => ({
       dialog: false,
       fab: false,
+      menu: false,
       headers: [
         {
           text: 'Ano Base',
@@ -214,14 +242,17 @@
       editedIndex: -1,
       editedItem: {
         ano: '',
-        data: '',
+        data: moment().format('YYYY-MM-DD'),
         situacao: '',
       },
       defaultItem: {
         ano: '',
-        data: '',
+        data: moment().format('YYYY-MM-DD'),
         situacao: '',
       },
+      inputRules: [
+        v => !!v || 'Preenchimento obrigatório',
+      ],
       snackbar: false,
       timeout: 4500,
       confirm: false,
@@ -233,6 +264,9 @@
     computed: {
       formTitle () {
         return this.editedIndex === -1 ? 'Nova Declaração' : 'Editar Declaração'
+      },
+      dateFormatted () {
+        return this.editedItem.data ? moment(this.editedItem.data).format('DD/MM/YYYY') : ''
       },
     },
 
@@ -341,15 +375,17 @@
       },
 
       save (modal) {
-        if (this.editedIndex > -1) {
-          Object.assign(this.declaracoes[this.editedIndex], this.editedItem)
-        } else {
-          // eslint-disable-next-line no-console
-          console.log(this.editedItem)
-          this.declaracoes.push(this.editedItem)
+        if (this.$refs.form.validate()) {
+          if (this.editedIndex > -1) {
+            Object.assign(this.declaracoes[this.editedIndex], this.editedItem)
+          } else {
+            // eslint-disable-next-line no-console
+            console.log(this.editedItem)
+            this.declaracoes.push(this.editedItem)
+          }
+          this.snackbar = true
+          this.close(modal)
         }
-        this.snackbar = true
-        this.close(modal)
       },
 
       openModal (action, item) {
@@ -371,7 +407,7 @@
           this.close('confirm')
         } else {
           this.editedItem.ano = '2019'
-          this.editedItem.data = '01/01/2020'
+          this.editedItem.data = moment().format('YYYY-MM-DD')
           this.editedItem.situacao = 'ENTREGUE'
           this.save('confirm')
         }

@@ -19,6 +19,7 @@
     <v-data-table
       :headers="headers"
       :items="declaracoes"
+      hide-default-footer
       sort-by="ano"
       class="elevation-1"
     >
@@ -52,6 +53,9 @@
         </v-toolbar>
       </template>
 
+      <template v-slot:item.data="{ item }">
+        <span>{{ formatDateOnTable(item.data) }}</span>
+      </template>
       <template v-slot:item.acao="{ item }">
         <v-icon
           small
@@ -288,7 +292,7 @@
         this.declaracoes = [
           {
             ano: '2018',
-            data: '18/11/2019',
+            data: '2019-11-18',
             situacao: 'ENTREGUE',
             bens: [
               {
@@ -310,7 +314,7 @@
           },
           {
             ano: '2017',
-            data: '11/09/2018',
+            data: '2018-09-11',
             situacao: 'ENTREGUE',
             bens: [
               {
@@ -332,7 +336,7 @@
           },
           {
             ano: '2016',
-            data: '22/04/2017',
+            data: '2017-04-22',
             situacao: 'ENTREGUE',
             bens: [
               {
@@ -353,6 +357,10 @@
             ]
           },
         ]
+      },
+
+      formatDateOnTable (date) {
+        return moment(date).format('DD/MM/YYYY')
       },
 
       editItem (item) {
@@ -379,8 +387,6 @@
           if (this.editedIndex > -1) {
             Object.assign(this.declaracoes[this.editedIndex], this.editedItem)
           } else {
-            // eslint-disable-next-line no-console
-            console.log(this.editedItem)
             this.declaracoes.push(this.editedItem)
           }
           this.snackbar = true
@@ -409,7 +415,9 @@
           this.editedItem.ano = '2019'
           this.editedItem.data = moment().format('YYYY-MM-DD')
           this.editedItem.situacao = 'ENTREGUE'
-          this.save('confirm')
+          this.declaracoes.push(this.editedItem)
+          this.snackbar = true
+          this.close('confirm')
         }
       }
     },

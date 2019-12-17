@@ -7,7 +7,7 @@
       dark
     >
       <v-app-bar-nav-icon @click="drawer = !drawer" />
-      <div class="d-flex align-center">
+      <div class="d-none d-md-flex align-center">
         <v-img
           alt="Logo Prefeitura de Santos"
           class="shrink ml-3"
@@ -15,6 +15,16 @@
           src="../assets/centralservidor-logo-texto.png"
           transition="scale-transition"
           width="140"
+        />
+      </div>
+      <div class="d-flex d-md-none align-center">
+        <v-img
+          alt="Logo Prefeitura de Santos"
+          class="shrink ml-3"
+          contain
+          src="../assets/centralservidor-logo.png"
+          transition="scale-transition"
+          width="62"
         />
       </div>
 
@@ -25,7 +35,8 @@
           <template v-slot:activator="{ on }">
             <v-btn text dark v-on="on">
               <v-icon left>mdi-chevron-down</v-icon>
-              Links Úteis
+              <span class="d-none d-md-flex mr-2">Links Úteis</span>
+              <v-icon>mdi-link-variant</v-icon>
             </v-btn>
           </template>
           <v-list class="accent--text">
@@ -48,7 +59,7 @@
         target="_blank"
         text
       >
-        <span class="mr-2">Sair</span>
+        <span class="d-none d-md-flex mr-2">Sair</span>
         <v-icon>mdi-logout</v-icon>
       </v-btn>
     </v-app-bar>

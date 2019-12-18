@@ -119,6 +119,9 @@ export default {
         { title: 'Portal do Servidor', route: '/port' },
       ]
     }
+  },
+  created() {
+    this.drawer = window.innerWidth >= 1264
   }
 }
 </script>

@@ -2,31 +2,11 @@
   <nav>
     <v-app-bar
       app
-      clipped-left
-      color="primary"
+      color="primary lighten-2"
       dark
     >
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
-      <div class="d-none d-md-flex align-center">
-        <v-img
-          alt="Logo Prefeitura de Santos"
-          class="shrink ml-3"
-          contain
-          src="../assets/centralservidor-logo-texto.png"
-          transition="scale-transition"
-          width="140"
-        />
-      </div>
-      <div class="d-flex d-md-none align-center">
-        <v-img
-          alt="Logo Prefeitura de Santos"
-          class="shrink ml-3"
-          contain
-          src="../assets/centralservidor-logo.png"
-          transition="scale-transition"
-          width="62"
-        />
-      </div>
+      <v-app-bar-nav-icon @click.stop="mini = !mini" />
+      
 
       <v-spacer></v-spacer>
 
@@ -66,15 +46,28 @@
 
     <v-navigation-drawer 
       dark
-      clipped 
       app 
-      v-model="drawer" 
-      color="primary lighten-3">
+      permanent
+      :disable-resize-watcher="false"
+      v-model="drawer"
+      :mini-variant.sync="mini" 
+      color="primary darken-1">
       <v-list>
         <v-list-item>
-          <v-list-item-avatar class="deep-orange lighten-1">
-            <span>CW</span> 
-          </v-list-item-avatar>
+            <v-img
+              alt="Logo Central do Servidor"
+              class="shrink my-2"
+              contain
+              src="../assets/centralservidor-logo.png"
+              width="60"
+            />
+            <v-img
+              alt="Logo Central do Servidor"
+              class="shrink my-2 ml-1"
+              contain
+              src="../assets/centralservidor-texto.png"
+              width="70"
+            />
         </v-list-item>
 
         <v-list-item class="mb-4">
@@ -84,6 +77,8 @@
           </v-list-item-content>
         </v-list-item>
 
+        <v-divider horizontal></v-divider>
+
         <v-list-item v-for="item in items" :key="item.title" router :to="item.route">
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
@@ -92,7 +87,23 @@
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
       </v-list>
+
+      <template v-slot:append>
+        <v-divider horizontal></v-divider>
+        <div class="ma-2 d-flex justify-center" @click.stop="mini = !mini">
+          <v-btn
+            icon
+          >
+            <v-icon v-if="mini">mdi-chevron-right</v-icon>
+            <v-icon v-else>mdi-chevron-left</v-icon>
+          </v-btn>
+
+        </div>
+
+      </template>
+        
     </v-navigation-drawer>
 
   </nav>
@@ -103,6 +114,7 @@ export default {
   data() {
     return {
       drawer: true,
+      mini: true,
       items: [
         { title: 'Declarações', icon: 'mdi-home-currency-usd', route: '/dec' },
         { title: 'Avaliações', icon: 'mdi-file-document-edit-outline', route: '/ava' },
